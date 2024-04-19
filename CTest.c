@@ -1,69 +1,66 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
 
-void printSquareArray(int *arr, int size){
-
+void printSquareArray(char *arr, int size){
+    printf("  ");
     for (int i = 0 ; i < size ; i++){
+        printf("%i", i);
+    }
+    printf("\n");
+    for (int i = 0 ; i < size ; i++){
+        printf("%i|",i );
         for (int j = 0 ; j < size ; j++){
-        printf("%i", arr[i*size+j]);
+        printf("%c", arr[i*size+j]);
         }
         printf("\n");
     }
 }
 
 
-int *return_squares_around(int *arr, int size, int x, int y){
+char *return_squares_around(char *arr, int size, int x, int y){
     
-    int* squares_around = (int*)malloc(9 * sizeof(int));
+    char* squares_around = (char*)malloc(9 * sizeof(char));
     int size_of = 1;
-        arr[y*size+x] = 0;
+
     if (x - 1 >= 0 && y - 1 >= 0) {
-        arr[y*size+x-size-1] = 1;
-        squares_around[size_of] = arr[x*size+y-size-1];
-       size_of++;
+        squares_around[size_of] = arr[y*size+x-size-1];
+        size_of++;
 
     }
 
     if (y - 1 >= 0) {
-        arr[y*size+x-size] = 2;
-        squares_around[size_of] = arr[x*size+y-size];
-        //printf("Pointer %p \n value at pointer %i \n", squares_around[size_of], *squares_around[size_of]);
+        squares_around[size_of] = arr[y*size+x-size];
         size_of++;
     }
 
     if (x + 1 < size && y - 1 >= 0) {
-        arr[y*size+x-size+1] = 3;
         squares_around[size_of] = arr[y*size+x-size+1];
         size_of++;
     }
 
     if (x - 1 >= 0) {
-        arr[y*size+x-1] = 4;
         squares_around[size_of] = arr[y*size+x-1];
         size_of++;
     }
 
     if (x + 1 < size) {
-        arr[y*size+x+1] = 5;
         squares_around[size_of] = arr[y*size+x+1];
         size_of++;
     }
 
     if (x - 1 >= 0 && y + 1 < size) {
-        arr[y*size+x+size-1] = 6;
         squares_around[size_of] = arr[y*size+x+size-1];
         size_of++;
     }
 
     if (y + 1 < size) {
-        arr[y*size+x+size] = 7;
         squares_around[size_of] = arr[y*size+x+size];
         size_of++;
     }
 
     if (x + 1 < size && y + 1 < size) {
-        arr[y*size+x+size+1] = 8;
         squares_around[size_of] = arr[y*size+x+size+1];
         size_of++;
     }
@@ -72,30 +69,77 @@ int *return_squares_around(int *arr, int size, int x, int y){
     return squares_around;
 }
 
-void printy(int *arr){
-int x = arr[0];
-printf("Number of surronding squares is = %i which is good! \n" , x);
-for (int i = 1; i < x+1; i++ ) {
-    int temp = arr[i];
-    printf("Value at the pointer is %i \n", temp );
-    }
+void set_bomb(char *arr, int size, int x , int y){
 
-    free(arr);
+    arr[y*size+x] = 'X';
+
+}
+
+void count_bombs(char *arr, int size, int x, int y){
+    if (arr[y*size+x] != 'X'){
+    char *neighbors = return_squares_around(arr, size , x , y);
+    int ans = 0; 
+    int t = neighbors[0];
+    for (int i = 1; i < t+1; i++ ) {
+    char temp = (char) neighbors[i];
+    if (temp == 'X'){
+        ans++;
+         }
+     }
+    if (ans != 0){
+        arr[y*size+x] =  ans + '0';
+    }
+    else {
+     arr[y*size+x] = ' ';
+    }
+    free(neighbors);
+    }
+}
+
+void fill_board_with_numbers(char *arr, int size){
+    for (int i = 0 ; i < size ; i++){
+        for(int j = 0 ; j < size ; j++) {
+        count_bombs(arr, size , i, j);
+        }
+    }
+}
+
+void random_bombs(char *arr, int size){
+
+    int nmb_bombs = round(size*size*0.2);
+    for (int i = 0 ; i < nmb_bombs; i++){
+    int x = random()%size;
+    int y = random()%size;
+    if (arr[y*size+x] == 'X'){
+    i--;
+    }
+    else {
+    set_bomb(arr, size, x ,y);
+    }
+    }
+}
+
+void click(char *arr, int size, int x, int y){
+char *neighbors = return_squares_around(arr, size , x , y);
 }
 
 int main(){
-    int ArraySize = 10;
-    int map[ArraySize][ArraySize];
 
-    for (int i = 0 ; i < 10 ; i++){
-        for (int j = 0 ; j < 10 ; j++){
-        map[i][j] = 1;
+    int ArraySize = 10;
+    char map[ArraySize][ArraySize];
+    char player_map[ArraySize][ArraySize];
+
+    for (int i = 0 ; i < ArraySize ; i++){
+        for (int j = 0 ; j < ArraySize ; j++){
+        player_map[i][j] = '?';
         }
     }
 
- printy(return_squares_around(*map, 10 , 4, 0));
- 
-    printSquareArray(*map, 10);
+    random_bombs(*map, ArraySize);
+    fill_board_with_numbers(*map, ArraySize);
+    printSquareArray(*map, ArraySize);
+    printSquareArray(*player_map, ArraySize);
+    
     return EXIT_SUCCESS; 
 
 }
