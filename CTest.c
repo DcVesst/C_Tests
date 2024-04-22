@@ -2,13 +2,15 @@
 #include <stdlib.h>
 #include <math.h>
 
-const int GamingGoing = 1;
-const int GameOver = 2;
-const int GameWon = 3; 
+const int game_going = 1;
+const int game_over = 2;
+const int game_won = 3; 
 int wincon;
 
 
+
 void printSquareArray(char *arr, int size){
+
     printf("Squares left %i \n", wincon);
     printf("  ");
     for (int i = 0 ; i < size ; i++){
@@ -23,6 +25,7 @@ void printSquareArray(char *arr, int size){
         printf("\n");
     }
     printf("\n");
+    
 }
 
 
@@ -148,10 +151,19 @@ void random_bombs(char *arr, int size){
 }
 
 int click(char *player_map, char *map, int size, int x, int y) {
+    if (x < 0 || y < 0 || x > size || y > size) {
+    printf(" Please enter a valid cordinates \n");
+    return game_going;
+    }
+    if(player_map[y*size+x] != '?'){
+    printf("Already pressed this square \n");
+    return game_going;
+    }
     if (map[y * size + x] == 'X') {
-        return GameOver;
+        return game_over;
     } else {
         player_map[y * size + x] = map[y * size + x];
+        wincon--;
         int *neighbors = return_squares_around(map, size, x, y);
         int t = neighbors[0];
         for (int i = 1; i < t; i += 2) {
@@ -162,7 +174,7 @@ int click(char *player_map, char *map, int size, int x, int y) {
                click(player_map, map, size, x, y);
             }
 
-            if (map[y * size + x] != 'X') {
+            if ((map[y * size + x] != 'X') && (player_map[y * size + x] == '?')) {
                 player_map[y * size + x] = map[y * size + x];
                 wincon--;
             }
@@ -170,7 +182,13 @@ int click(char *player_map, char *map, int size, int x, int y) {
              
         }
         free(neighbors);
-        return GamingGoing;
+        if (wincon == 0 ) {
+            return game_won;
+        }
+        else {
+            return game_going;
+        }
+       
     }
 }
 
@@ -187,13 +205,33 @@ int main(){
         player_map[i][j] = '?';
         }
     }
-
+    int game_state = game_going;
     random_bombs(*map, ArraySize);
     fill_board_with_numbers(*map, ArraySize);
-    click(*player_map, *map, ArraySize, 4, 3);
+    //click(*player_map, *map, ArraySize, 5, 7);
     printSquareArray(*map, ArraySize);
     printSquareArray(*player_map, ArraySize);
+    while(game_state == game_going) {
     
+    char line[100]; // Assuming a maximum line length of 100 characters 
+    printf("Enter cordinates \n"); 
+    fgets(line, sizeof(line), stdin);
+    
+    int x = line[0]-'0';
+    int y = line[2]-'0';
+    
+    game_state = click(*player_map, *map, ArraySize, x, y);
+   // printSquareArray(*map, ArraySize);
+    printSquareArray(*player_map, ArraySize);
+    }
+    if (game_state == game_won) {
+    printf("You won! \n");
+    }
+    if (game_state == game_over) {
+    printSquareArray(*map, ArraySize);
+    printf("Pressed a bomb! \n");
+
+    }
     return EXIT_SUCCESS; 
 
 }
