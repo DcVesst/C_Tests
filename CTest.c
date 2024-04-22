@@ -147,27 +147,27 @@ void random_bombs(char *arr, int size){
     }
 }
 
-int click(char *player_map, char *map, int size, int x, int y){
+int click(char *player_map, char *map, int size, int x, int y) {
+    if (map[y * size + x] == 'X') {
+        return GameOver;
+    } else {
+        player_map[y * size + x] = map[y * size + x];
+        int *neighbors = return_squares_around(map, size, x, y);
+        int t = neighbors[0];
+        for (int i = 1; i < t; i += 2) {
+            int x = neighbors[i];
+            int y = neighbors[i + 1];
 
-if (map[y*size+x] == 'X') {
-return GameOver;
-}
-else {
-player_map[y*size + x ] = map[y*size + x];
-int *neighbors = return_squares_around(map, size , x , y);
-int t = neighbors[0];
-for (int i = 1; i < t ; i++ ){
-int x = neighbors[i];
-i++;
-int y = neighbors[i];
-    if (map[y*size + x] != 'X'){
-    player_map[y*size + x ] = map[y*size + x];
-    wincon--;
+            if ((map[y * size + x] == ' ') && (player_map[y * size + x] == '?')) {
+               click(player_map, map, size, x, y);
             }
-    if (map[y*size + x] == ' ' && player_map[y*size+x] != '?'){
-    //click(player_map, map, size, x, y);
-       } 
-    
+
+            if (map[y * size + x] != 'X') {
+                player_map[y * size + x] = map[y * size + x];
+                wincon--;
+            }
+
+             
         }
         free(neighbors);
         return GamingGoing;
@@ -190,7 +190,7 @@ int main(){
 
     random_bombs(*map, ArraySize);
     fill_board_with_numbers(*map, ArraySize);
-    click(*player_map, *map, ArraySize, 4, 5);
+    click(*player_map, *map, ArraySize, 4, 3);
     printSquareArray(*map, ArraySize);
     printSquareArray(*player_map, ArraySize);
     
