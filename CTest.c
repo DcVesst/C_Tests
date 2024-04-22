@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/time.h>
 #include <math.h>
 
 const int game_going = 1;
@@ -7,7 +8,7 @@ const int game_over = 2;
 const int game_won = 3; 
 int wincon;
 
-
+//Around 6.6 times faster than my implementation in C#
 
 void printSquareArray(char *arr, int size){
 
@@ -194,23 +195,33 @@ int click(char *player_map, char *map, int size, int x, int y) {
 
 int main(){
 
-    int ArraySize = 10;
-    char map[ArraySize][ArraySize];
-    char player_map[ArraySize][ArraySize];
+    int ArraySize = 5000;
+    char *map = malloc(ArraySize*ArraySize* sizeof(char));
+    char *player_map = malloc(ArraySize*ArraySize* sizeof(char));
     wincon = ArraySize*ArraySize;
     
 
     for (int i = 0 ; i < ArraySize ; i++){
         for (int j = 0 ; j < ArraySize ; j++){
-        player_map[i][j] = '?';
+        player_map[j*ArraySize + i] = '?';
         }
     }
     int game_state = game_going;
-    random_bombs(*map, ArraySize);
-    fill_board_with_numbers(*map, ArraySize);
+
+    time_t t0 = time(0);
+    random_bombs(map, ArraySize);
+    time_t t1 = time(0);
+    double datetime_diff_ms = difftime(t1, t0) * 1000.;
+    printf("Generate bombs %f ms \n",datetime_diff_ms);
+
+    time_t t2 = time(0);
+    fill_board_with_numbers(map, ArraySize);
+    time_t t3 = time(0);
+    double datetime_diff_ms2 = difftime(t3, t2) * 1000.;
+    printf("Generate numbers %f ms \n",datetime_diff_ms2);
     //click(*player_map, *map, ArraySize, 5, 7);
-    printSquareArray(*map, ArraySize);
-    printSquareArray(*player_map, ArraySize);
+    //printSquareArray(map, ArraySize);
+    //printSquareArray(player_map, ArraySize);
     while(game_state == game_going) {
     
     char line[100]; // Assuming a maximum line length of 100 characters 
@@ -220,18 +231,20 @@ int main(){
     int x = line[0]-'0';
     int y = line[2]-'0';
     
-    game_state = click(*player_map, *map, ArraySize, x, y);
+    game_state = click(player_map, map, ArraySize, x, y);
    // printSquareArray(*map, ArraySize);
-    printSquareArray(*player_map, ArraySize);
+    //printSquareArray(player_map, ArraySize);
     }
     if (game_state == game_won) {
     printf("You won! \n");
     }
     if (game_state == game_over) {
-    printSquareArray(*map, ArraySize);
+    printSquareArray(map, ArraySize);
     printf("Pressed a bomb! \n");
 
     }
+    free(map);
+    free(player_map);
     return EXIT_SUCCESS; 
 
 }
