@@ -2,8 +2,14 @@
 #include <stdlib.h>
 #include <math.h>
 
+const int GamingGoing = 1;
+const int GameOver = 2;
+const int GameWon = 3; 
+int wincon;
+
 
 void printSquareArray(char *arr, int size){
+    printf("Squares left %i \n", wincon);
     printf("  ");
     for (int i = 0 ; i < size ; i++){
         printf("%i", i);
@@ -16,52 +22,69 @@ void printSquareArray(char *arr, int size){
         }
         printf("\n");
     }
+    printf("\n");
 }
 
 
-char *return_squares_around(char *arr, int size, int x, int y){
+int *return_squares_around(char *arr, int size, int x, int y){
     
-    char* squares_around = (char*)malloc(9 * sizeof(char));
+    int *squares_around = malloc(17 * sizeof(int));
     int size_of = 1;
 
     if (x - 1 >= 0 && y - 1 >= 0) {
-        squares_around[size_of] = arr[y*size+x-size-1];
+        squares_around[size_of] = x-1;
+        size_of++;
+        squares_around[size_of] = y-1;
         size_of++;
 
     }
 
     if (y - 1 >= 0) {
-        squares_around[size_of] = arr[y*size+x-size];
+        squares_around[size_of] = x;
+        size_of++;
+        squares_around[size_of] = y-1;
         size_of++;
     }
 
     if (x + 1 < size && y - 1 >= 0) {
-        squares_around[size_of] = arr[y*size+x-size+1];
+        squares_around[size_of] = x+1;
+        size_of++;
+        squares_around[size_of] = y-1;
         size_of++;
     }
 
     if (x - 1 >= 0) {
-        squares_around[size_of] = arr[y*size+x-1];
+        squares_around[size_of] = x-1;
+        size_of++;
+        squares_around[size_of] = y;
         size_of++;
     }
 
     if (x + 1 < size) {
-        squares_around[size_of] = arr[y*size+x+1];
+        squares_around[size_of] = x+1;
+        size_of++;
+        squares_around[size_of] = y;
         size_of++;
     }
 
     if (x - 1 >= 0 && y + 1 < size) {
-        squares_around[size_of] = arr[y*size+x+size-1];
+        squares_around[size_of] = x-1;
+        size_of++;
+        squares_around[size_of] = y+1;
         size_of++;
     }
 
     if (y + 1 < size) {
-        squares_around[size_of] = arr[y*size+x+size];
+        squares_around[size_of] = x;
+        size_of++;
+        squares_around[size_of] = y+1;
         size_of++;
     }
 
     if (x + 1 < size && y + 1 < size) {
-        squares_around[size_of] = arr[y*size+x+size+1];
+        squares_around[size_of] = x+1;
+        size_of++;
+        squares_around[size_of] = y+1;
         size_of++;
     }
     size_of--;
@@ -72,20 +95,25 @@ char *return_squares_around(char *arr, int size, int x, int y){
 void set_bomb(char *arr, int size, int x , int y){
 
     arr[y*size+x] = 'X';
+    wincon--; 
 
 }
 
 void count_bombs(char *arr, int size, int x, int y){
     if (arr[y*size+x] != 'X'){
-    char *neighbors = return_squares_around(arr, size , x , y);
+    int *neighbors = return_squares_around(arr, size , x , y);
     int ans = 0; 
     int t = neighbors[0];
     for (int i = 1; i < t+1; i++ ) {
-    char temp = (char) neighbors[i];
+    int x = neighbors[i];
+    i++; 
+    int y = neighbors[i];
+    char temp = arr[y*size+x];
     if (temp == 'X'){
         ans++;
          }
      }
+
     if (ans != 0){
         arr[y*size+x] =  ans + '0';
     }
@@ -119,8 +147,31 @@ void random_bombs(char *arr, int size){
     }
 }
 
-void click(char *arr, int size, int x, int y){
-char *neighbors = return_squares_around(arr, size , x , y);
+int click(char *player_map, char *map, int size, int x, int y){
+
+if (map[y*size+x] == 'X') {
+return GameOver;
+}
+else {
+player_map[y*size + x ] = map[y*size + x];
+int *neighbors = return_squares_around(map, size , x , y);
+int t = neighbors[0];
+for (int i = 1; i < t ; i++ ){
+int x = neighbors[i];
+i++;
+int y = neighbors[i];
+    if (map[y*size + x] != 'X'){
+    player_map[y*size + x ] = map[y*size + x];
+    wincon--;
+            }
+    if (map[y*size + x] == ' ' && player_map[y*size+x] != '?'){
+    //click(player_map, map, size, x, y);
+       } 
+    
+        }
+        free(neighbors);
+        return GamingGoing;
+    }
 }
 
 int main(){
@@ -128,6 +179,8 @@ int main(){
     int ArraySize = 10;
     char map[ArraySize][ArraySize];
     char player_map[ArraySize][ArraySize];
+    wincon = ArraySize*ArraySize;
+    
 
     for (int i = 0 ; i < ArraySize ; i++){
         for (int j = 0 ; j < ArraySize ; j++){
@@ -137,6 +190,7 @@ int main(){
 
     random_bombs(*map, ArraySize);
     fill_board_with_numbers(*map, ArraySize);
+    click(*player_map, *map, ArraySize, 4, 5);
     printSquareArray(*map, ArraySize);
     printSquareArray(*player_map, ArraySize);
     
