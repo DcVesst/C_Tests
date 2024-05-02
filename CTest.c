@@ -7,7 +7,8 @@ static const int GameWon = 3;
 
 
 void printSquareArray(char *arr, int size){
-    printf("  ");
+
+    printf("\n  ");
     for (int i = 0 ; i < size ; i++){
         printf("%i", i);
     }
@@ -23,52 +24,54 @@ void printSquareArray(char *arr, int size){
 
 
 char *return_squares_around(char *arr, int size, int x, int y){
-    char **squares_around = malloc(9 * sizeof(char*));
+    char** squares_around = malloc(9 * sizeof(char*));
     int size_of = 1;
 
     if (x - 1 >= 0 && y - 1 >= 0) {
-        squares_around[size_of] = &arr[y*size+x-size-1];
-        printf("Value at 1 %c \n", *squares_around[size_of]);
-        printf("Value at 2 %i \n", &arr[y*size+x-size-1]);
+        squares_around[size_of] = &(arr[y*size+x-size-1]);
+        printf("Value in squares_around is %c \n", *squares_around[size_of]);
+        printf("\n");
         size_of++;
     }
 
     if (y - 1 >= 0) {
-        squares_around[size_of] = &arr[y*size+x-size];
+        squares_around[size_of] = &(arr[y*size+x-size]);
         size_of++;
     }
 
     if (x + 1 < size && y - 1 >= 0) {
-        squares_around[size_of] = &arr[y*size+x-size+1];
+        squares_around[size_of] = &(arr[y*size+x-size+1]);
         size_of++;
     }
 
     if (x - 1 >= 0) {
-        squares_around[size_of] = &arr[y*size+x-1];
+        squares_around[size_of] = &(arr[y*size+x-1]);
         size_of++;
     }
 
     if (x + 1 < size) {
-        squares_around[size_of] = &arr[y*size+x+1];
+        squares_around[size_of] = &(arr[y*size+x+1]);
         size_of++;
     }
 
     if (x - 1 >= 0 && y + 1 < size) {
-        squares_around[size_of] = &arr[y*size+x+size-1];
+        squares_around[size_of] = &(arr[y*size+x+size-1]);
         size_of++;
     }
 
     if (y + 1 < size) {
-        squares_around[size_of] = &arr[y*size+x+size];
+        squares_around[size_of] = &(arr[y*size+x+size]);
         size_of++;
     }
 
     if (x + 1 < size && y + 1 < size) {
-        squares_around[size_of] = &arr[y*size+x+size+1];
+        squares_around[size_of] = &(arr[y*size+x+size+1]);
         size_of++;
     }
     size_of--;
-    squares_around[0] = &size_of;
+    char c_size = size_of + '0';
+    squares_around[0] = &c_size;
+
     return *squares_around;
 }
 
@@ -79,33 +82,37 @@ void set_bomb(char *arr, int size, int x , int y){
 }
 
 void count_bombs(char *arr, int size, int x, int y){
+
     if (arr[y*size+x] != 'X'){
     char *neighbors = return_squares_around(arr, size , x , y);
-    int ans = 0; 
-    int t = neighbors[0];
 
-    for (int i = 1; i < t+1; i++ ) {
+    int ans = 0;
+    int t = neighbors[0] - '0';
+    //printf("Length of neighbors = %i \n",t );
+
+    for (int i = 1; i < t+1; i++) {
     char temp = neighbors[i];
-     printf(" Count bombs string %c \n", temp );
+    printf("Count bombs char = %c \n",temp);
     if (temp == 'X'){
         ans++;
          }
      }
+
     if (ans != 0){
         arr[y*size+x] =  ans + '0';
     }
+
     else {
      arr[y*size+x] = ' ';
     }
     //free(neighbors);
-
     }
 }
 
 void fill_board_with_numbers(char *arr, int size){
-    for (int i = 0 ; i < size ; i++){
-        for(int j = 0 ; j < size ; j++) {
-        count_bombs(arr, size , i, j);
+    for (int x = 0 ; x < size ; x++){
+        for(int y = 0 ; y < size ; y++) {
+        count_bombs(arr, size , x, y);
         }
     }
 }
@@ -140,7 +147,7 @@ int click(char *map, char *player_map, int size, int x, int y){
          }
      
      else {
-        printf("Testing please %c \n ", temp);
+        printf("Testing please %c \n", temp);
         printf("Testing neighbors %c \n", neighbors_1[i]);
        // player_map[y*size+x] = map[y*size+x];
         (neighbors_1[i]) = (char) temp;
@@ -159,18 +166,21 @@ int click(char *map, char *player_map, int size, int x, int y){
 
 int main(){
 
-    int ArraySize = 10;
+    int ArraySize = 3;
     char map[ArraySize][ArraySize];
     char player_map[ArraySize][ArraySize];
 
     for (int i = 0 ; i < ArraySize ; i++){
         for (int j = 0 ; j < ArraySize ; j++){
         player_map[i][j] = '?';
+        map[i][j] = ' ';
         }
     }
 
-    random_bombs(*map, ArraySize);
+    //random_bombs(*map, ArraySize);
+    set_bomb(*map, ArraySize, 1 , 1);
     fill_board_with_numbers(*map, ArraySize);
+    
    // click(*map, *player_map, ArraySize, 0, 4);
     printSquareArray(*map, ArraySize);
     printSquareArray(*player_map, ArraySize);
