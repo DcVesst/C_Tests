@@ -75,6 +75,27 @@ void print_reverse(){
 	printf("\n");
 }
 
+	struct Node* node_at_index(int index){
+	if(head == NULL) {
+	printf("List empty \n");
+	return NULL;
+	}
+	struct Node* temp = head;
+	if (length < index) {
+	printf("Index out of bounds \n");
+	return NULL;
+	}
+		
+	//-1 because we start at head
+	for(int i = 0 ; i < index-1 ; i++){
+	temp = temp->next;
+
+	}
+
+	return temp;
+
+	}
+
 	void insert_at_tail(int x){
 	struct Node* new_node = create_node(x);
 	struct Node* temp = head;
@@ -173,7 +194,7 @@ void print_reverse(){
 		if (head == NULL){
 		return result;
 		}
-		result++;
+		//result++;
 		while(temp != NULL){
 		result++;
 		temp = temp->next;
@@ -189,7 +210,7 @@ int main(){
 	length = 0;
 	printf(" Testing please \n");
 
-	for (int i = 0 ; i < 10 ; i++) {
+	for (int i = 0 ; i < 20 ; i++) {
 	insert_at_head(i);
 	}
 	print_forward();
@@ -197,10 +218,20 @@ int main(){
 	//destroy_node(0);
 	//destroy_node(9);
 	//destroy_node(0);
+	printf("The length of the linked list is %d \n ", get_length(head) );
 	destroy_specific_value(0);
+
+	for(int i = 0 ; i < 5 ; i++){
+	destroy_node(i);
+	}
+	destroy_node(get_length(head));
+	
 	//destroy_specific_value(9);
 	printf("The length of the linked list is %d \n ", get_length(head) );
 	print_forward();
+	destroy_node(0);
+	printf("The value at index = %d is %d \n", 0, node_at_index(0)->data);
+	print_reverse();
 	//print_reverse();
 
 	exit(EXIT_SUCCESS);
