@@ -208,7 +208,7 @@ void print_reverse(){
 int main(){
 	head = NULL;
 	length = 0;
-	printf(" Testing please \n");
+	//printf(" Testing please \n");
 
 	for (int i = 0 ; i < 20 ; i++) {
 	insert_at_head(i);
