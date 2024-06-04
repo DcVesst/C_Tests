@@ -23,19 +23,20 @@ void printSquareArray(char *arr, int size){
 }
 
 
-char *return_squares_around(char *arr, int size, int x, int y){
+char** return_squares_around(char *arr, int size, int x, int y){
     char** squares_around = malloc(9 * sizeof(char*));
     int size_of = 1;
 
     if (x - 1 >= 0 && y - 1 >= 0) {
         squares_around[size_of] = &(arr[y*size+x-size-1]);
-        printf("Value in squares_around is %c \n", *squares_around[size_of]);
+        //printf("Value in squares_around is %c \n", *squares_around[size_of]);
         printf("\n");
         size_of++;
     }
 
     if (y - 1 >= 0) {
         squares_around[size_of] = &(arr[y*size+x-size]);
+        //printf("Value in squares_around is X = %c \n", *squares_around[size_of]);
         size_of++;
     }
 
@@ -72,7 +73,7 @@ char *return_squares_around(char *arr, int size, int x, int y){
     char c_size = size_of + '0';
     squares_around[0] = &c_size;
 
-    return *squares_around;
+    return squares_around;
 }
 
 void set_bomb(char *arr, int size, int x , int y){
@@ -84,11 +85,11 @@ void set_bomb(char *arr, int size, int x , int y){
 void count_bombs(char *arr, int size, int x, int y){
 
     if (arr[y*size+x] != 'X'){
-    char *neighbors = return_squares_around(arr, size , x , y);
+    char *neighbors = *return_squares_around(arr, size , x , y);
 
     int ans = 0;
     int t = neighbors[0] - '0';
-    //printf("Length of neighbors = %i \n",t );
+    printf("Length of neighbors = %i \n",t );
 
     for (int i = 1; i < t+1; i++) {
     char temp = neighbors[i];
@@ -131,7 +132,7 @@ void random_bombs(char *arr, int size){
     }
     }
 }
-
+/*
 int click(char *map, char *player_map, int size, int x, int y){
 
     if (map[y*size+x] != 'X'){
@@ -163,7 +164,7 @@ int click(char *map, char *player_map, int size, int x, int y){
     }
 
 }
-
+*/
 int main(){
 
     int ArraySize = 3;
