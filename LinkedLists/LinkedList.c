@@ -135,6 +135,8 @@ void print_reverse(){
 		head = temp->next;
 		temp->next->prev = NULL;
 		free(temp);
+		temp = NULL;
+		length--;
 		return;
 		}
 
@@ -142,14 +144,33 @@ void print_reverse(){
 		if (temp->next == NULL) {
 		temp->prev->next = NULL;
 		free(temp);
+		temp = NULL;
+		length--;
 		return;
 		}
 
 		// any other node
 		temp->prev->next=temp->next;
 		temp->next->prev = temp->prev;
-		
+		temp = NULL;
+		length--;
 		free(temp);
+	}
+
+	void destroy_entire_list(){
+
+		struct Node* temp = head;
+		struct Node* next_node;
+		while(temp != NULL) {
+
+		next_node = temp->next;
+		free(temp);
+		temp = next_node;
+
+		}
+		head = NULL;
+	
+
 	}
 
 	void destroy_specific_value(int x){
@@ -164,6 +185,8 @@ void print_reverse(){
 		head = temp->next;
 		temp->next->prev = NULL;
 		free(temp);
+		temp = NULL;
+		length--;
 		return;
 		}
 
@@ -171,13 +194,16 @@ void print_reverse(){
 		if (temp->next == NULL) {
 		temp->prev->next = NULL;
 		free(temp);
+		temp = NULL;
+		length--;
 		return;
 		}
 
 		// any other node
 		temp->prev->next=temp->next;
 		temp->next->prev = temp->prev;
-		
+		temp = NULL;
+		length--;
 		free(temp);
 		return;
 			}
@@ -213,12 +239,13 @@ int main(){
 	for (int i = 0 ; i < 20 ; i++) {
 	insert_at_head(i);
 	}
+	printf("The length of the linked list is %d acording to int length its %d \n ", get_length(head), length );
 	print_forward();
+
 	//insert_at_tail(-1);
 	//destroy_node(0);
 	//destroy_node(9);
 	//destroy_node(0);
-	printf("The length of the linked list is %d \n ", get_length(head) );
 	destroy_specific_value(0);
 
 	for(int i = 0 ; i < 5 ; i++){
@@ -226,11 +253,15 @@ int main(){
 	}
 	destroy_node(get_length(head));
 	
-	//destroy_specific_value(9);
-	printf("The length of the linked list is %d \n ", get_length(head) );
+	destroy_specific_value(9);
+
+	printf("The length of the linked list is %d acording to int length its %d \n ", get_length(head), length );
 	print_forward();
+
 	destroy_node(0);
 	printf("The value at index = %d is %d \n", 0, node_at_index(0)->data);
+	destroy_entire_list();
+	
 	print_reverse();
 	//print_reverse();
 
